@@ -1,0 +1,77 @@
+documentation:
+  version: 'v1'
+  title: "Demo Serverless Documentation"
+  description: "Demo Serverless Lambda functions template API Swagger Documentation"
+  schemes:
+    - https
+  servers:
+    - url: https://dev.moons.rocks/crm
+      description: Development server
+  models:
+    - name: "SuccessResponse"
+      description: "Successful Response"
+      contentType: "application/json"
+      schema:
+        type: string
+        description: Simple message reflecting success
+    - name: "Unauthorized"
+      description: "Unauthorized Response Schema"
+      contentType: "application/json"
+      schema:
+        type: object
+        properties:
+          status:
+            type: integer
+            description: "Response status code"
+          message:
+            type: string
+            description: "unauthorized description"
+    - name: "ErrorNotFound"
+      description: "Custom Not Found Error"
+      contentType: "application/json"
+      schema:
+        type: string
+        description: "Simple message reflecting error not found"
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+  security:
+    - basicAuth: []
+    - ApiKeyAuth: []
+
+endpoints:
+  demoServerless:
+    summary: "Brief summary of lambda function actions/effects, Responds with positive/negative authorization"
+    description: "Simple Authorization Lambda function"
+    tags:
+      - "Demo Serverless Basic Authorization"
+    method: post
+    methodResponses:
+      - statusCode: "200"
+        responseBody:
+          description: "Successful Response"
+        responseModels:
+          "application/json": "SuccessResponse"
+      - statusCode: "401"
+        responseBody:
+          description: "Unauthorized Response Schema"
+        responseModels:
+          "application/json": "Unauthorized"
+
+  unit:
+    summary: "Unit test lambda"
+    description: "Responds with 404 error message"
+    tags:
+      - "Demo Serverless Basic Authorization"
+    method: post
+    methodResponses:
+      - statusCode: 404
+        responseBody:
+          description: "Error Not Found"
+        responseModels:
+          "application/json": "ErrorNotFound"

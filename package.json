@@ -1,0 +1,113 @@
+{
+  "name": "demo-app",
+  "version": "1.0.0",
+  "description": "Demo app for serverles & AWS Lambda",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint . --cache",
+    "lint:updated": "pipe-git-updated --ext=js -- eslint --cache",
+    "prettier-check": "prettier -c --ignore-path .gitignore \"**/*.{css,html,js,json,md,yaml,yml}\"",
+    "prettier-check:updated": "pipe-git-updated --ext=css --ext=html --ext=js --ext=json --ext=md --ext=yaml --ext=yml -- prettier -c",
+    "prettify": "prettier --write --ignore-path .gitignore \"**/*.{css,html,js,json,md,yaml,yml}\"",
+    "prettify:updated": "pipe-git-updated --ext=css --ext=html --ext=js --ext=json --ext=md --ext=yaml --ext=yml -- prettier --write",
+    "test": "jest",
+    "dev": "yarn lint && sls offline --stage dev --env development",
+    "deploy_dev": "sls deploy --stage dev  --env development",
+    "qa": "sls offline --stage qa --env qa",
+    "deploy_qa": "sls deploy --stage qa --env qa",
+    "prod": "sls offline --stage prod --env production",
+    "deploy_prod": "sls deploy --stage prod --env production",
+    "clean": "npm cache clean --force",
+    "deploy_demoServerless": "sls deploy function --function demoServerless --stage dev --env development",
+    "deploy_doc": "sls openapi generate && ./deploy_doc.sh --bucket=dev-moons-api-docs --folder=serverless-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/my-moons/serverless-template.git"
+  },
+  "keywords": [
+    "serverless",
+    "aws",
+    "lambda",
+    "node"
+  ],
+  "author": "Carlos Canizal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/my-moons/serverless-template/issues"
+  },
+  "homepage": "https://github.com/my-moons/serverless-template#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@conqa/serverless-openapi-documentation": "^1.1.0",
+    "@serverless/eslint-config": "^2.2.0",
+    "eslint": "^7.6.0",
+    "eslint-plugin-import": "^2.22.0",
+    "git-list-updated": "^1.2.1",
+    "husky": "^4.2.5",
+    "jest": "^24.9.0",
+    "lambda-tester": "^4.0.1",
+    "prettier": "^2.0.5",
+    "serverless-deployment-bucket": "^1.1.0",
+    "serverless-dotenv-plugin": "^2.1.1",
+    "serverless-offline": "^5.12.1",
+    "serverless-s3-remover": "^0.6.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
+  },
+  "eslintConfig": {
+    "extends": "@serverless/eslint-config/node",
+    "root": true,
+    "rules": {
+      "eol-last": [
+        "error",
+        "always"
+      ],
+      "no-console": "off",
+      "semi": [
+        2,
+        "never"
+      ],
+      "comma-dangle": [
+        "error",
+        "never"
+      ],
+      "no-plusplus": [
+        2,
+        {
+          "allowForLoopAfterthoughts": true
+        }
+      ],
+      "no-param-reassign": [
+        2,
+        {
+          "props": false
+        }
+      ],
+      "require-jsdoc": [
+        "error",
+        {
+          "require": {
+            "FunctionDeclaration": true,
+            "MethodDefinition": true,
+            "ClassDeclaration": true,
+            "ArrowFunctionExpression": true,
+            "FunctionExpression": true
+          }
+        }
+      ],
+      "valid-jsdoc": "error",
+      "no-unused-expressions": [
+        2,
+        {
+          "allowShortCircuit": true,
+          "allowTernary": true,
+          "allowTaggedTemplates": true
+        }
+      ]
+    }
+  }
+}

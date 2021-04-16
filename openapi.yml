@@ -1,0 +1,75 @@
+openapi: 3.0.0
+components:
+  schemas:
+    SuccessResponse:
+      type: string
+      description: Simple message reflecting success
+    Unauthorized:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: Response status code
+        message:
+          type: string
+          description: unauthorized description
+    ErrorNotFound:
+      type: string
+      description: Simple message reflecting error not found
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+info:
+  title: Demo Serverless Documentation
+  description: Demo Serverless Lambda functions template API Swagger Documentation
+  version: v1
+paths:
+  /demo-serverless:
+    post:
+      operationId: demoServerless
+      summary: >-
+        Brief summary of lambda function actions/effects, Responds with
+        positive/negative authorization
+      description: Simple Authorization Lambda function
+      tags:
+        - Demo Serverless Basic Authorization
+      parameters: []
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: Unauthorized Response Schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+  /unit-demo-serverless:
+    get:
+      operationId: unit
+      summary: Unit test lambda
+      description: Responds with 404 error message
+      tags:
+        - Demo Serverless Basic Authorization
+      parameters: []
+      responses:
+        '404':
+          description: Error Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+security:
+  - basicAuth: []
+  - ApiKeyAuth: []
+servers:
+  - url: 'https://dev.moons.rocks/crm'
+    description: Development server

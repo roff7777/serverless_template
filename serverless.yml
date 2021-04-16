@@ -1,0 +1,116 @@
+service: serverless-test
+app: serverless-test
+org: devmoons
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  project: ${self:app}
+  memorySize: 1024 # optional, in MB, default is 1024
+  timeout: 30 # optional, in seconds, default is 6
+  stage: ${opt:stage,'dev'}
+  stackName: ${opt:stage,'dev'}-${self:app} # Use a custom name for the CloudFormatiosn stack
+  apiGateway:
+    restApiId: ${env:API_GATEWAY_ID}
+    restApiRootResourceId: ${env:API_GATEWAY_RESOURCE_ID}
+  deploymentBucket:
+    name: ${opt:stage,'dev'}-serverless-test
+    serverSideEncryption: AES256
+  deploymentPrefix: ${self:app}
+  tracing:
+    lambda: true
+    apiGateway: true
+  enviroment:
+    API_GATEWAY_ID: ${env:API_GATEWAY_ID}
+    API_GATEWAY_RESOURCE_ID: ${env:API_GATEWAY_RESOURCE_ID}
+    BASIC_AUTH_USERNAME: ${env:BASIC_AUTH_USERNAME}
+    BASIC_AUTH_PASSWORD: ${env:BASIC_AUTH_PASSWORD}
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-deployment-bucket
+  - serverless-s3-remover
+  - "@conqa/serverless-openapi-documentation"
+
+custom:
+  webpack:
+    packager: "npm" # Packager that will be used to package your external modules
+    includeModules:
+      packagePath: ./package.json
+
+  region: us-east-2
+  stage-default: "dev"
+
+  remover:
+    buckets:
+      - ${opt:stage,'dev'}-serverless-test
+
+  package:
+    exclude:
+      - .gitignore
+      - .git/**
+    individually: true
+    excludeDevDependencies: true
+
+  dotenv:
+    include:
+      - API_GATEWAY_ID
+      - API_GATEWAY_RESOURCE_ID
+      - BASIC_AUTH_USERNAME
+      - BASIC_AUTH_PASSWORD
+
+  documentation: ${file(serverless.docs.yml):documentation}
+
+functions:
+  demoServerless:
+    name: ${opt:stage,'dev'}-${self:app}-demoServerless
+    handler: src/handler.demoServerless
+    package:
+      individually: true
+    events:
+      - http:
+          path: demo-serverless
+          method: post
+          cors:
+            origins:
+              - https://*.moons.ninja
+              - https://*.moons.rocks
+              - http://localhost:3001
+              - http://localhost:3000
+              - http://localhost:8080  
+              - http://localhost:8000
+              - https://*.s3.amazonaws.com       
+          documentation: ${file(serverless.docs.yml):endpoints.demoServerless}                  
+          integration: lambda-proxy
+          response:
+            headers:
+              Access-Control-Allow-Headers: "*"
+              Access-Control-Allow-Origin: "*"
+              Access-Control-Allow-Credentials: false
+
+  unit:
+    name: ${opt:stage,'dev'}-${self:app}-unit
+    handler: src/handler.unit
+    package:
+      individually: true
+    events:
+      - http:
+          path: unit-demo-serverless
+          method: get
+          cors:
+            origins:
+              - https://*.moons.ninja
+              - https://*.moons.rocks
+              - http://localhost:3001
+              - http://localhost:3000
+              - http://localhost:8080  
+              - http://localhost:8000
+              - https://*.s3.amazonaws.com       
+          documentation: ${file(serverless.docs.yml):endpoints.unit}                  
+          integration: lambda-proxy
+          response:
+            headers:
+              Access-Control-Allow-Headers: "*"
+              Access-Control-Allow-Origin: "*"
+              Access-Control-Allow-Credentials: false
